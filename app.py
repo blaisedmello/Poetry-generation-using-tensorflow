@@ -1,29 +1,43 @@
+import numpy as np
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+import matplotlib.pyplot as plt
+import random
+import os
+
 import tensorflow as tf
-from tensorflow import keras
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.layers import *
 
-sentences = [
-    'I love my dog',
-    'I love my cat',
-    'You love my dog!',
-    'Do you think my dog is amazing?'
-]
+root_dir = "./forms"
+corpus = []
+corpus_size = 10000
+done = False
 
-#test_data = [
-#    'i really love my dog',
-#    'my dog loves my manatee'
-#]
+print("Loading Poems in corpus..\n")
+for dirname, _, filenames in os.walk(root_dir):
+    if done: 
+        break
+    print(f"Loading {dirname}")
+    for filename in filenames:
+        if done: 
+            break
 
-tokenizer = Tokenizer(num_words = 100, oov_token = "<OOV>")
-tokenizer.fit_on_texts(sentences)
-word_index = tokenizer.word_index
+        file_path = os.path.join(dirname, filename)
 
-sequences = tokenizer.texts_to_sequences(sentences)
-#test_seq = tokenizer.texts_to_sequences(test_data)
-padded = pad_sequences(sequences, padding = 'post', maxlen = 5, truncating = 'post')
+        if filename.endswith(".txt"):
+            try:
+                with open(os.path.join(dirname, filename), "r") as file:
+                    print(file)
+                    txt = file.read()
+                    for line in txt.split("\n"):
+                        if done: 
+                            break
+                        corpus.append(line)
+                        if len(corpus) == corpus_size:
+                            done = True
+                            break
+            except Exception as e:
+                print(f"Error reading file {file_path}: {e}")
 
-print(word_index)
-print(sequences)
-print(padded)
-#print(test_seq)
+print(len(corpus))
